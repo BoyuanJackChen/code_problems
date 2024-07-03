@@ -14,9 +14,12 @@ from vllm.sampling_params import SamplingParams
 from vllm.utils import random_uuid
 
 from ray import serve
+import os
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "2,3"
 
 
-@serve.deployment(ray_actor_options={"num_gpus": 1})
+@serve.deployment(ray_actor_options={"num_gpus": 2})
 class VLLMPredictDeployment:
     def __init__(self, **kwargs):
         """
@@ -81,7 +84,7 @@ class VLLMPredictDeployment:
         stream = request_dict.pop("stream", False)
         sampling_params = SamplingParams(**request_dict)
         request_id = random_uuid()
-        results_generator = self.engine.generate(prompt, sampling_params, request_id)
+        results_generator = self.engine.generate(prompt,  sampling_params, request_id)
         if stream:
             background_tasks = BackgroundTasks()
             # Using background_taks to abort the the request
@@ -109,22 +112,11 @@ class VLLMPredictDeployment:
 
 def send_sample_request():
     import requests
-
     prompt = "How do I cook fried rice?"
     sample_input = {"prompt": prompt, "stream": True}
     output = requests.post("http://localhost:8000/", json=sample_input)
     for line in output.iter_lines():
         print(line.decode("utf-8"))
 
+deployment = VLLMPredictDeployment.bind(model="facebook/opt-125m")
 
-if __name__ == "__main__":
-    # To run this example, you need to install vllm which requires
-    # OS: Linux
-    # Python: 3.8 or higher
-    # CUDA: 11.0 – 11.8
-    # GPU: compute capability 7.0 or higher (e.g., V100, T4, RTX20xx, A100, L4, etc.)
-    # see https://vllm.readthedocs.io/en/latest/getting_started/installation.html
-    # for more details.
-    deployment = VLLMPredictDeployment.bind(model="facebook/opt-125m")
-    serve.run(deployment)
-    send_sample_request()
