@@ -16,7 +16,7 @@ from vllm.utils import random_uuid
 from ray import serve
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "2,3"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 
 @serve.deployment(ray_actor_options={"num_gpus": 2})
