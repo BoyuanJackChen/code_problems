@@ -14,9 +14,8 @@ from vllm.sampling_params import SamplingParams
 from vllm.utils import random_uuid
 
 from ray import serve
+import ray
 import os
-
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 
 @serve.deployment(ray_actor_options={"num_gpus": 2})
@@ -110,13 +109,5 @@ class VLLMPredictDeployment:
         return Response(content=json.dumps(ret))
 
 
-def send_sample_request():
-    import requests
-    prompt = "How do I cook fried rice?"
-    sample_input = {"prompt": prompt, "stream": True}
-    output = requests.post("http://localhost:8000/", json=sample_input)
-    for line in output.iter_lines():
-        print(line.decode("utf-8"))
-
-deployment = VLLMPredictDeployment.bind(model="facebook/opt-125m")
+deployment = VLLMPredictDeployment.bind(model="lmsys/vicuna-7b-v1.5")
 

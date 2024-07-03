@@ -1,5 +1,8 @@
 # vllm server
-两个.py脚本，分别是带有continuous batching功能的server，还有用LLM做的speculative decoding server，都是用vllm库做的。目前都能跑，安装环境后可以直接跑。
+Two servers implemented from vllm, one can do continuous batching; the other can do speculative decoding. Install the requirements and run the commands right away. 
+
+## TODO:
+The server only uses 1 gpu at a time... Need to fix this.
 
 ## Running commands
 

@@ -10,6 +10,8 @@ from ray import serve
 @serve.deployment(ray_actor_options={"num_gpus": 2})
 class SpeculativeLLMServer:
     def __init__(self):
+        pairs = ["facebook/opt-6.7b", "facebook/opt-125m",
+         "lmsys/vicuna-7b-v1.5", "Jiayi-Pan/Tiny-Vicuna-1B"]
         self.llm = LLM(
             model="lmsys/vicuna-7b-v1.5",
             tensor_parallel_size=1,
